@@ -2,7 +2,7 @@ from ..config import get_db_connection
 from flask import jsonify
 import bcrypt
 
-def register_user(user_data):
+def signup_user(user_data):
     conn = get_db_connection()
     if conn is None:
         return jsonify({"error": "Database connection failed"}), 500
@@ -34,7 +34,7 @@ def register_user(user_data):
         params = (email, hashed_password, first_name, last_name)  
         cursor.execute(query, params)
         conn.commit()
-        return jsonify({"success": f"{email} registered successfully"}), 201
+        return jsonify({"success": f"{email} registered successfully"}), 200
     except Exception as e:
         conn.rollback()  # Rollback in case of any error
         return jsonify({"error": str(e)}), 400

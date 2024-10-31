@@ -8,12 +8,12 @@ load_dotenv()
 
 def create_app():
     app = Flask(__name__)
-    CORS(app)
+    CORS(app, supports_credentials=True, origins="http://localhost:5173")
 
     # Import blueprints
     from myapp.routes import my_blueprint
     app.register_blueprint(my_blueprint)
-    print("FLASK_ENV:", os.getenv('FLASK_ENV'))  # Add this line to debug
+    # print("FLASK_ENV:", os.getenv('FLASK_ENV'))  # Add this line to debug
 
     return app
 

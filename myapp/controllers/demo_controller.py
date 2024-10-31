@@ -1,4 +1,9 @@
 from flask import jsonify
+from datetime import datetime
+
 
 def hello_world():
-    return jsonify({"message": "Hello World..."}), 200
+    now = datetime.now()
+
+    current_time = now.strftime("%H:%M:%S")
+    return jsonify({"message": current_time}), 200
