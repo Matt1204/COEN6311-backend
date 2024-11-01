@@ -12,21 +12,43 @@ def auth_user(user_data):
     email = user_data.get("email")
     password = user_data.get("password")
     if not email or not password:
-        return jsonify({"error": "Missing email or password"}), 400
+        return (
+            jsonify(
+                {
+                    "error": "client-side issue",
+                    "message": "Please provide complete form",
+                }
+            ),
+            400,
+        )
 
     conn = get_db_connection()
     if conn is None:
-        return jsonify({"error": "Database connection failed"}), 500
-    cursor = conn.cursor(
-        dictionary=True
-    )  # Ensure that the cursor returns dictionary-like objects
+        return (
+            jsonify(
+                {
+                    "error": "internal error",
+                    "message": "internal error",
+                }
+            ),
+            500,
+        )
+    cursor = conn.cursor(dictionary=True)
 
     try:
         # find email
         cursor.execute("SELECT * FROM user WHERE email = %s", (email,))
         foundUser = cursor.fetchone()
         if foundUser is None:
-            return jsonify({"error": "User not found"}), 403
+            return (
+                jsonify(
+                    {
+                        "error": "account not found",
+                        "message": "Incorrect Email or Password",
+                    }
+                ),
+                404,
+            )
         # Verify the password
         hashed_password = foundUser["password"]
         match = bcrypt.checkpw(
@@ -42,11 +64,11 @@ def auth_user(user_data):
                 {
                     "UserInfo": {
                         "email": foundUser["email"],
-                        # 'roles': foundUser['roles']
-                        "first_name": foundUser["first_name"],
-                        "last_name": foundUser["last_name"],
+                        "role": foundUser["role"],
+                        # "first_name": foundUser["first_name"],
+                        # "last_name": foundUser["last_name"],
                     },
-                    "exp": datetime.now(timezone.utc) + timedelta(seconds=10),
+                    "exp": datetime.now(timezone.utc) + timedelta(minutes=10),
                 },
                 ACCESS_TOKEN_SECRET,
                 algorithm="HS256",
@@ -55,7 +77,7 @@ def auth_user(user_data):
             new_refresh_token = jwt.encode(
                 {
                     "email": foundUser["email"],
-                    "exp": datetime.now(timezone.utc) + timedelta(seconds=35),
+                    "exp": datetime.now(timezone.utc) + timedelta(hours=3),
                 },
                 REFRESH_TOKEN_SECRET,
                 algorithm="HS256",
@@ -70,7 +92,7 @@ def auth_user(user_data):
             }
             response = make_response(jsonify(response_data), 200)
 
-            # Parse the refresh token from the cookies
+            # Parse the refresh token list from the db
             db_rt_list = (
                 json.loads(foundUser["refresh_token"])
                 if foundUser["refresh_token"]
@@ -80,19 +102,18 @@ def auth_user(user_data):
 
             new_rt_list = []
             cookie_rt = request.cookies.get("refreshToken")
-            print(f"! cookie.rt: {cookie_rt}")
             # prepare data for updating database refersh token
             # check if cookie.rt exist in reqeust
             if cookie_rt:
                 # filter out the cookie.rt from database
                 new_rt_list = [rt for rt in db_rt_list if rt != cookie_rt]
-                response.set_cookie(
-                    "refreshToken", "", expires=0
-                )  # remove rt from cookie
+                # response.set_cookie(
+                #     "refreshToken", "", expires=0
+                # )  # remove rt from cookie
                 response.delete_cookie("refreshToken")
-                print(f"! remove RT from db: {cookie_rt}")
+                print(f"! remove RT from db")
             else:
-                print("! no cookie rt, no change to database")
+                print("! no cookie.rt, no change to database")
                 new_rt_list = db_rt_list
 
             # update database with new refreh token list
@@ -110,7 +131,7 @@ def auth_user(user_data):
                 httponly=True,
                 # secure=False,
                 # samesite="None",
-                max_age=1800,
+                max_age=3600,
                 secure=True,
                 samesite="None",  # Allow cross-site cookie sharing
             )
@@ -120,7 +141,15 @@ def auth_user(user_data):
             return response
 
         else:
-            return jsonify({"error": "wrong password"}), 500
+            return (
+                jsonify(
+                    {
+                        "error": "account not found",
+                        "message": "Incorrect Email or Password",
+                    }
+                ),
+                403,
+            )
 
     except Exception as e:
         # Handle general exceptions

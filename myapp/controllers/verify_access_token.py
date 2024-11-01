@@ -1,3 +1,5 @@
+# if access token has problem, status code must be 401
+
 from flask import request, jsonify, abort
 from functools import wraps
 import jwt
@@ -8,26 +10,9 @@ def verify_access_token(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
 
-        # cookie_rt = request.cookies.get("refreshToken")
-        # REFRESH_TOKEN_SECRET = os.getenv("REFRESH_TOKEN_SECRET")
-        # try:
-        #     decoded_rt = jwt.decode(
-        #         cookie_rt, REFRESH_TOKEN_SECRET, algorithms=["HS256"]
-        #     )
-        #     print(decoded_rt)
-        # except jwt.ExpiredSignatureError:
-        #     # rt is expired
-        #     print("RT expire")
-        #     return "", 403
-        # except jwt.InvalidTokenError:
-        #     # rt is invalid
-        #     print("RT invalid")
-        #     return "", 403
-
-        authHeader = request.headers.get(
-            "Authorization", ""
-        )  # Get the authorization header
-        if not authHeader.startswith("Bearer "):
+        # parse access token
+        authHeader = request.headers.get("Authorization", "")
+        if authHeader is None or not authHeader.startswith("Bearer "):
             print("verift_access_token(): no Bearer token detected!!!")
             return (
                 jsonify(
@@ -38,18 +23,16 @@ def verify_access_token(f):
                 ),
                 401,
             )
-            # abort(401)  # Unauthorized access
 
-        token = authHeader.split(" ")[1]
+        # verify access token
+        access_token = authHeader.split(" ")[1]
         try:
-            # Verify AT
-            decoded = jwt.decode(
-                token, os.getenv("ACCESS_TOKEN_SECRET"), algorithms=["HS256"]
+            jwt.decode(
+                access_token, os.getenv("ACCESS_TOKEN_SECRET"), algorithms=["HS256"]
             )
 
         except jwt.ExpiredSignatureError:
             print("verift_access_token(): AT timeout")
-            # abort(403)  # Forbidden access - token expired
             return (
                 jsonify(
                     {
@@ -59,7 +42,7 @@ def verify_access_token(f):
                 ),
                 401,
             )
-        except (jwt.InvalidTokenError, IndexError):
+        except jwt.InvalidTokenError:
             print("verift_access_token(): AT invalid")
             return (
                 jsonify(
@@ -70,7 +53,6 @@ def verify_access_token(f):
                 ),
                 401,
             )
-            # abort(403)  # Forbidden access - invalid token
 
         return f(*args, **kwargs)
 

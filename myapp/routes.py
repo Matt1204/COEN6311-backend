@@ -4,6 +4,7 @@ from .controllers.auth_controller import auth_user
 from .controllers.refresh_token_controller import refresh_access_token
 from .controllers.demo_controller import hello_world  # Import the new controller
 from .controllers.verify_access_token import verify_access_token
+from .controllers.logout_controller import logout_user
 
 my_blueprint = Blueprint("my_blueprint", __name__)
 
@@ -23,6 +24,11 @@ def auth():
 @my_blueprint.route("/refresh", methods=["GET"])
 def refresh():
     return refresh_access_token()
+
+
+@my_blueprint.route("/logout", methods=["GET"])
+def logout():
+    return logout_user()
 
 
 @my_blueprint.route("/demo", methods=["GET"])  # New route for demo
