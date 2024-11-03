@@ -68,11 +68,12 @@ def auth_user(user_data):
                         # "first_name": foundUser["first_name"],
                         # "last_name": foundUser["last_name"],
                     },
-                    "exp": datetime.now(timezone.utc) + timedelta(minutes=10),
+                    "exp": datetime.now(timezone.utc) + timedelta(minutes=30),
                 },
                 ACCESS_TOKEN_SECRET,
                 algorithm="HS256",
             )
+            print(f"at:{new_access_token}")
             # Generate refresh token
             new_refresh_token = jwt.encode(
                 {
