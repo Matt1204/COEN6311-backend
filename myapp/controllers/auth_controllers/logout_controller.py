@@ -1,5 +1,5 @@
 from flask import jsonify, make_response, request
-from ..config import get_db_connection
+from ...config import get_db_connection
 import jwt
 import os
 import json

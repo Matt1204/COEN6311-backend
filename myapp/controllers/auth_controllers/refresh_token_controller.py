@@ -4,7 +4,7 @@ from flask import jsonify, make_response, request
 import jwt
 from datetime import datetime, timedelta, timezone
 import os
-from ..config import get_db_connection
+from ...config import get_db_connection
 import json
 
 
@@ -143,7 +143,7 @@ def refresh_access_token():
                     "email": foundUser["email"],
                     "role": foundUser["role"],
                 },
-                "exp": datetime.now(timezone.utc) + timedelta(seconds=10),
+                "exp": datetime.now(timezone.utc) + timedelta(minutes=30),
             },
             ACCESS_TOKEN_SECRET,
             algorithm="HS256",

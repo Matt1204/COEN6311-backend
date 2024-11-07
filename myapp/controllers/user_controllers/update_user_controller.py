@@ -1,5 +1,5 @@
 from flask import jsonify, make_response, request
-from ..config import get_db_connection
+from ...config import get_db_connection
 from pymysql import MySQLError, OperationalError, IntegrityError
 
 
@@ -28,6 +28,7 @@ def update_user(req_payload):
             500,
         )
     cursor = conn.cursor(dictionary=True)
+
     try:
         check_query = "SELECT email FROM user WHERE email = %s"
         cursor.execute(check_query, (email,))
@@ -42,9 +43,17 @@ def update_user(req_payload):
                 404,
             )
     except Exception as e:
-        print(f"error finding email: {e}")
+        return (
+            jsonify(
+                {
+                    "error": "client-side issue",
+                    "message": "check",
+                }
+            ),
+            400,
+        )
 
-    fields = [
+    all_fields = [
         "first_name",
         "last_name",
         "address",
@@ -55,25 +64,34 @@ def update_user(req_payload):
     ]
     updates = []
     params = {"email": email}
-    for field in fields:
+    for field in all_fields:
         if req_payload.get(field):
             updates.append(f"{field} = %({field})s")
             params[field] = req_payload.get(field)
 
     if not updates:
-        return jsonify({"message": "No valid fields provided to update"}), 400
+        # return jsonify({"message": "No valid fields provided to update"}), 400
+        return (
+            jsonify(
+                {
+                    "error": "client-side issue",
+                    "message": "No valid fields provided to update",
+                }
+            ),
+            400,
+        )
 
     sql = "UPDATE user SET " + ", ".join(updates) + " WHERE email = %(email)s"
     # print(updates)
     # print(params)
-    # print(sql)
+    print(sql)
 
     try:
         cursor.execute(sql, params)
         conn.commit()  # Commit the transaction
 
         params.pop("email", None)
-        return jsonify({"data": {"email": email, "updated": params}}), 200
+        return jsonify({"data": {"email": email}}), 200
 
     except IntegrityError as e:
         conn.rollback()

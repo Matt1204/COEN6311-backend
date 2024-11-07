@@ -26,6 +26,7 @@ def verify_access_token(f):
 
         # verify access token
         access_token = authHeader.split(" ")[1]
+        print(f"verift_access_token() get AT:" + access_token)
         try:
             jwt.decode(
                 access_token, os.getenv("ACCESS_TOKEN_SECRET"), algorithms=["HS256"]

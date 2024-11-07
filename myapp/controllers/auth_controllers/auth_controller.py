@@ -1,4 +1,4 @@
-from ..config import get_db_connection
+from ...config import get_db_connection
 from flask import jsonify, make_response, request
 import bcrypt
 import jwt
