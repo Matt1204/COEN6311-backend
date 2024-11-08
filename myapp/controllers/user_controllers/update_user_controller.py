@@ -65,7 +65,10 @@ def update_user(req_payload):
     updates = []
     params = {"email": email}
     for field in all_fields:
-        if req_payload.get(field):
+        value = req_payload.get(field)
+        print(f"{field}: {value}")
+        if value is not None:
+            print(f"{field} in")
             updates.append(f"{field} = %({field})s")
             params[field] = req_payload.get(field)
 
