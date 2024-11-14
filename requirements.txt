@@ -1,5 +1,7 @@
-Flask==1.1.2
+Flask==2.2.2
 Flask-CORS==3.0.10
 mysql-connector-python==8.0.23
 bcrypt==3.2.0
 python-dotenv==1.0.1
+Werkzeug==2.2.2
+pymysql==1.1.1
