@@ -8,6 +8,7 @@ from .controllers.auth_controllers.logout_controller import logout_user
 from .controllers.user_controllers.get_user_controller import get_user
 from .controllers.user_controllers.update_user_controller import update_user
 from .controllers.hospital_controllers.get_all_hospitals import get_all_hospitals
+from .controllers.schedule_controller.schedule_controller import generate_schedule
 from .controllers.preference_controllers.create_preference_controller import (
     create_preference,
 )
@@ -32,6 +33,13 @@ def signup():
 def auth():
     data = request.json
     return auth_user(data)
+
+
+@my_blueprint.route("/generate-schedule", methods=["POST"])
+@verify_access_token
+def generate_schedule__route():
+    data = request.json
+    return generate_schedule(data)
 
 
 @my_blueprint.route("/refresh", methods=["GET"])
