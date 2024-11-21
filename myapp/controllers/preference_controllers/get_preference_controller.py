@@ -39,7 +39,10 @@ def get_preference():
         print(found_pref)
         if found_pref is None:
             print("!!! No Preference Found")
-            return jsonify({"data": {}}), 200
+            return (
+                jsonify({"data": {}}),
+                200,
+            )
 
         # userData = foundUser
         # return jsonify({"data": "found_pref"}), 200
