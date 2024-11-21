@@ -78,7 +78,7 @@ def update_pref(pref_data):
             else:
                 params[field] = json.dumps(value)
 
-    print(updates)
+    # print(updates)
     print(params)
 
     try:
@@ -90,7 +90,7 @@ def update_pref(pref_data):
 
         cursor.execute(sql, params)
         conn.commit()  # Commit the transaction
-        return jsonify({"msg": "update"}), 200
+        return jsonify({"msg": "update successful"}), 200
 
     except Exception as e:
         # Handle general exceptions

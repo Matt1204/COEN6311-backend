@@ -69,7 +69,16 @@ def create_preference(pref_data):
         cursor.execute(query, params)
         conn.commit()
 
-        return (jsonify({"data": params}), 200)
+        return (
+            jsonify(
+                {
+                    "msg": "creation scuueccfuly",
+                    "nurse_id": nurse_id,
+                    "start_date": start_date,
+                }
+            ),
+            200,
+        )
 
     except Exception as e:
         print(e)
