@@ -8,6 +8,11 @@ from .controllers.auth_controllers.logout_controller import logout_user
 from .controllers.user_controllers.get_user_controller import get_user
 from .controllers.user_controllers.update_user_controller import update_user
 from .controllers.hospital_controllers.get_all_hospitals import get_all_hospitals
+from .controllers.preference_controllers.create_preference_controller import (
+    create_preference,
+)
+from .controllers.preference_controllers.get_preference_controller import get_preference
+from .controllers.preference_controllers.update_preference_controller import update_pref
 
 my_blueprint = Blueprint("my_blueprint", __name__)
 
@@ -50,6 +55,32 @@ def get_user_route():
 def update_user_route():
     data = request.json
     return update_user(data)
+
+
+@my_blueprint.route("/preference/create-preference", methods=["POST"])
+@verify_access_token
+def create_pref_route():
+    pref_data = request.json
+    return create_preference(pref_data)
+
+
+@my_blueprint.route("/preference/get-preference", methods=["GET"])
+@verify_access_token
+def get_pref_route():
+    return get_preference()
+
+
+@my_blueprint.route("/preference/delete-preference", methods=["DELETE"])
+@verify_access_token
+def del_pref_route():
+    return "delete-pref"
+
+
+@my_blueprint.route("/preference/update-preference", methods=["PUT"])
+@verify_access_token
+def update_pref_route():
+    pref_data = request.json
+    return update_pref(pref_data)
 
 
 @my_blueprint.route("/demo", methods=["GET"])  # New route for demo

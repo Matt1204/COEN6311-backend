@@ -47,7 +47,7 @@ def update_user(req_payload):
             jsonify(
                 {
                     "error": "client-side issue",
-                    "message": "check",
+                    "message": "user not found",
                 }
             ),
             400,

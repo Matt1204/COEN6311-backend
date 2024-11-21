@@ -165,5 +165,7 @@ def refresh_access_token():
         return jsonify({"error": "Internal error", "message": str(e)}), 500
 
     finally:
-        cursor.close()
-        conn.close()
+        if "cursor" in locals():
+            cursor.close()
+        if "conn" in locals():
+            conn.close()

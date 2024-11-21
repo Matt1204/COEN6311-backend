@@ -6,7 +6,7 @@ import bcrypt
 def signup_user(user_data):
     conn = get_db_connection()
     if conn is None:
-        return jsonify(
+        return (
             jsonify({"error": "internal error", "message": "server internal error"}),
             500,
         )
@@ -85,10 +85,13 @@ def signup_user(user_data):
         return jsonify({"email": email}), 200
     except Exception as e:
         conn.rollback()  # Rollback in case of any error
-        return jsonify(
+        return (
             jsonify({"error": "internal error", "message": "server internal error"}),
             500,
         )
+
     finally:
-        cursor.close()
-        conn.close()
+        if "cursor" in locals():
+            cursor.close()
+        if "conn" in locals():
+            conn.close()
