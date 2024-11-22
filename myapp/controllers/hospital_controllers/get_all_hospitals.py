@@ -24,10 +24,12 @@ def get_all_hospitals():
     except Exception as e:
         # Handle general exceptions
         print("get_all_hospitals error: " + e)
-        return jsonify(
+        return (
             jsonify({"error": "internal error", "message": "server internal error"}),
             500,
         )
     finally:
-        cursor.close()
-        conn.close()
+        if "cursor" in locals():
+            cursor.close()
+        if "conn" in locals():
+            conn.close()

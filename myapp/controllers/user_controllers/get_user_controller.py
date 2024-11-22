@@ -49,7 +49,7 @@ def get_user():
     except Exception as e:
         # Handle general exceptions
         print(e)
-        return jsonify(
+        return (
             jsonify({"error": "internal error", "message": "server internal error"}),
             500,
         )

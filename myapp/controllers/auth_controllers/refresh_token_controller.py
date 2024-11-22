@@ -155,6 +155,7 @@ def refresh_access_token():
             "first_name": foundUser["first_name"],
             "last_name": foundUser["last_name"],
             "role": foundUser["role"],
+            "u_id": foundUser["u_id"],
             "access_token": new_access_token,
         }
 
@@ -165,5 +166,7 @@ def refresh_access_token():
         return jsonify({"error": "Internal error", "message": str(e)}), 500
 
     finally:
-        cursor.close()
-        conn.close()
+        if "cursor" in locals():
+            cursor.close()
+        if "conn" in locals():
+            conn.close()

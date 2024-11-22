@@ -90,6 +90,7 @@ def auth_user(user_data):
                 "last_name": foundUser["last_name"],
                 "access_token": new_access_token,
                 "role": foundUser["role"],
+                "u_id": foundUser["u_id"],
             }
             response = make_response(jsonify(response_data), 200)
 
@@ -158,5 +159,7 @@ def auth_user(user_data):
         return jsonify({"error": str(e)}), 500
 
     finally:
-        cursor.close()
-        conn.close()
+        if "cursor" in locals():
+            cursor.close()
+        if "conn" in locals():
+            conn.close()
