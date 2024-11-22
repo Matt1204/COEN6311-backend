@@ -13,6 +13,11 @@ from .controllers.preference_controllers.create_preference_controller import (
 )
 from .controllers.preference_controllers.get_preference_controller import get_preference
 from .controllers.preference_controllers.update_preference_controller import update_pref
+from .controllers.request_controllers.get_req_list_controller import get_req_list
+from .controllers.request_controllers.get_req_controller import get_req
+from .controllers.request_controllers.create_req_controller import create_req
+from .controllers.request_controllers.update_req_controller import update_req
+
 
 my_blueprint = Blueprint("my_blueprint", __name__)
 
@@ -81,6 +86,32 @@ def del_pref_route():
 def update_pref_route():
     pref_data = request.json
     return update_pref(pref_data)
+
+
+@my_blueprint.route("/request/get-req-list", methods=["GET"])
+@verify_access_token
+def get_req_list_route():
+    return get_req_list()
+
+
+@my_blueprint.route("/request/get-req", methods=["GET"])
+@verify_access_token
+def get_req_route():
+    return get_req()
+
+
+@my_blueprint.route("/request/create-req", methods=["POST"])
+@verify_access_token
+def create_req_route():
+    data = request.json
+    return create_req(data)
+
+
+@my_blueprint.route("/request/update-req", methods=["PUT"])
+@verify_access_token
+def update_req_route():
+    data = request.json
+    return create_req(data)
 
 
 @my_blueprint.route("/demo", methods=["GET"])  # New route for demo
