@@ -1,5 +1,6 @@
 from flask import jsonify, request
 from ...config import get_db_connection
+from datetime import date
 
 
 def get_req():
@@ -36,12 +37,19 @@ def get_req():
         if not found_req:
             print("!!! No Preference Found")
             return (
-                jsonify({"data": {}}),
-                200,
+                jsonify(
+                    {
+                        "error": "client-side issue",
+                        "message": "No request found.",
+                    }
+                ),
+                400,
             )
 
-        print(found_req)
-
+        print(found_req["shift_date"])
+        print(type(found_req["shift_date"]))
+        found_req["shift_date"] = found_req["shift_date"].strftime("%Y-%m-%d")
+        # print(f"{date_str}, {type(date_str)}")
         return jsonify({"data": found_req}), 200
 
     except Exception as e:

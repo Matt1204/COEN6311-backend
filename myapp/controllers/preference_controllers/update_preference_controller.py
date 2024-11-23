@@ -52,7 +52,7 @@ def update_pref(pref_data):
             jsonify(
                 {
                     "error": "client-side issue",
-                    "message": "error finding user",
+                    "message": "error finding preference",
                 }
             ),
             400,
@@ -80,6 +80,17 @@ def update_pref(pref_data):
 
     # print(updates)
     print(params)
+    if not updates:
+        # return jsonify({"message": "No valid fields provided to update"}), 400
+        return (
+            jsonify(
+                {
+                    "error": "client-side issue",
+                    "message": "payload empty",
+                }
+            ),
+            400,
+        )
 
     try:
         sql = (
