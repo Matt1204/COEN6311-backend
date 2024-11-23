@@ -111,7 +111,7 @@ def create_req_route():
 @verify_access_token
 def update_req_route():
     data = request.json
-    return create_req(data)
+    return update_req(data)
 
 
 @my_blueprint.route("/demo", methods=["GET"])  # New route for demo
