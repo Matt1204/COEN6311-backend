@@ -18,7 +18,16 @@ from .controllers.request_controllers.get_req_list_controller import get_req_lis
 from .controllers.request_controllers.get_req_controller import get_req
 from .controllers.request_controllers.create_req_controller import create_req
 from .controllers.request_controllers.update_req_controller import update_req
-
+from .controllers.preference_template_controllers.create_preference_template_controller import create_preference_template
+from .controllers.preference_template_controllers.delete_preference_template_controller import delete_preference_template
+from .controllers.preference_template_controllers.get_preference_template_controller import get_preference_template
+from .controllers.preference_template_controllers.update_preference_template_controller import update_preference_template
+from .controllers.preference_template_controllers.get_preference_templates_controller import get_preference_templates
+from .controllers.request_template_controllers.create_request_template_controller import create_request_template
+from .controllers.request_template_controllers.get_request_templates_controller import get_request_templates
+from .controllers.request_template_controllers.get_request_template_controller import get_request_template
+from .controllers.request_template_controllers.update_request_template_controller import update_request_template
+from .controllers.request_template_controllers.delete_request_template_controller import delete_request_template
 
 my_blueprint = Blueprint("my_blueprint", __name__)
 
@@ -121,6 +130,59 @@ def update_req_route():
     data = request.json
     return update_req(data)
 
+@my_blueprint.route("/preference-template/create-template", methods=["POST"])
+@verify_access_token
+def create_preference_template_route():
+    data = request.json
+    return create_preference_template(data)
+
+@my_blueprint.route("/preference-template/delete-template", methods=["DELETE"])
+@verify_access_token
+def delete_preference_template_route():
+    return delete_preference_template()
+
+@my_blueprint.route("/preference-template/get-template", methods=["GET"])
+@verify_access_token
+def get_preference_template_route():
+    return get_preference_template()
+
+@my_blueprint.route("/preference-template/update-template", methods=["PUT"])
+@verify_access_token
+def update_preference_template_route():
+    data = request.json
+    return update_preference_template(data)
+
+@my_blueprint.route("/preference-template/get-templates", methods=["GET"])
+@verify_access_token
+def get_preference_templates_route():
+    return get_preference_templates()
+
+@my_blueprint.route("/request-template/create-template", methods=["POST"])
+@verify_access_token
+def create_request_template_route():
+    data = request.json
+    return create_request_template(data)
+
+@my_blueprint.route("/request-template/get-templates", methods=["GET"])
+@verify_access_token
+def get_request_templates_route():
+    return get_request_templates()
+
+@my_blueprint.route("/request-template/get-template", methods=["GET"])
+@verify_access_token
+def get_request_template_route():
+    return get_request_template()
+
+@my_blueprint.route("/request-template/update-template", methods=["PUT"])
+@verify_access_token
+def update_request_template_route():
+    data = request.json
+    return update_request_template(data)
+
+@my_blueprint.route("/request-template/delete-template", methods=["DELETE"])
+@verify_access_token
+def delete_request_template_route():
+    return delete_request_template()
 
 @my_blueprint.route("/demo", methods=["GET"])  # New route for demo
 @verify_access_token
