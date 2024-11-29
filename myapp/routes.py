@@ -14,6 +14,12 @@ from .controllers.preference_controllers.create_preference_controller import (
 )
 from .controllers.preference_controllers.get_preference_controller import get_preference
 from .controllers.preference_controllers.update_preference_controller import update_pref
+
+from .controllers.request_controllers.get_req_list_controller import get_req_list
+from .controllers.request_controllers.get_req_controller import get_req
+from .controllers.request_controllers.create_req_controller import create_req
+from .controllers.request_controllers.update_req_controller import update_req
+
 from .controllers.nurse_schedule_controllers.get_nurse_shift_list_controller import (
     get_nurse_shift_list,
 )
@@ -23,11 +29,10 @@ from .controllers.hospital_schedule_controllers.get_hospital_shift_list import (
 from .controllers.hospital_schedule_controllers.get_hospital_shift_info import (
     get_hospital_shift_info,
 )
+from .controllers.user_management_controllers.get_user_list_controller import (
+    get_user_list,
+)
 
-from .controllers.request_controllers.get_req_list_controller import get_req_list
-from .controllers.request_controllers.get_req_controller import get_req
-from .controllers.request_controllers.create_req_controller import create_req
-from .controllers.request_controllers.update_req_controller import update_req
 from .controllers.preference_template_controllers.create_preference_template_controller import (
     create_preference_template,
 )
@@ -154,6 +159,13 @@ def create_req_route():
     return create_req(data)
 
 
+@my_blueprint.route("/request/update-req", methods=["PUT"])
+@verify_access_token
+def update_req_route():
+    data = request.json
+    return update_req(data)
+
+
 @my_blueprint.route("/nurse-schedule/get-shift-list", methods=["GET"])
 @verify_access_token
 def get_nurse_shift_list_route():
@@ -172,11 +184,10 @@ def get_hospital_shift_info_route():
     return get_hospital_shift_info()
 
 
-@my_blueprint.route("/request/update-req", methods=["PUT"])
+@my_blueprint.route("/user-management/get-user-list", methods=["GET"])
 @verify_access_token
-def update_req_route():
-    data = request.json
-    return update_req(data)
+def get_user_list_route():
+    return get_user_list()
 
 
 @my_blueprint.route("/preference-template/create-template", methods=["POST"])
