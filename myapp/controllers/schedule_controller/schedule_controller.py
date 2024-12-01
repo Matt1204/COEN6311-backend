@@ -69,19 +69,7 @@ class Nurse:
     
     def __repr__(self):
         # print all nurse's information including preferences
-        return f"Nurse ID: {self.id}, Seniority: {self.seniority}, Shift Type: {self.shift_type}, Hours Per Week: {self.hours_per_week}, Preferred Days: {self.preferred_days}, Max Hours Per Shift: {self.max_hours_per_shift}, Hospitals Ranking: {self.hospitals_ranking}"        
-
-    def can_accept_shift(self, shift_hours: int) -> bool:
-        return self.remaining_weekly_hours >= shift_hours
-
-    def take_shift(self, shift_hours: int):
-        '''Update remaining weekly hours after assigning a shift'''
-        if self.can_accept_shift(shift_hours):
-            self.remaining_weekly_hours -= shift_hours
-
-    def leave_shift(self, shift_hours: int):
-        '''Update remaining weekly hours after unassigning a shift'''
-        self.remaining_weekly_hours += shift_hours
+        return f"Nurse ID: {self.id}, Seniority: {self.seniority}, Shift Type: {self.shift_type}, Hours Per Week: {self.hours_per_week}, Preferred Days: {self.preferred_days}, Max Hours Per Shift: {self.max_hours_per_shift}, Hospitals Ranking: {self.hospitals_ranking}"
 
     def reject_shifts(self):
         '''
@@ -94,8 +82,18 @@ class Nurse:
             # this is to keep the nurse's best preferred shifts (at each iteration)
             sorted_assigned_shifts = sorted(list(self.assigned_shifts), key=lambda shift: self.shift_rankings.index(shift.id))
 
-            self.assigned_shifts = set(sorted_assigned_shifts[:self.capacity])
-            return set(sorted_assigned_shifts[self.capacity:]) 
+            # check for overlapping shifts and remove the ones with the lowest preference
+            non_overlapping_shifts = []
+            rejected_overlapping_shifts = []
+            for shift in sorted_assigned_shifts:
+                if not any(s.shift_date == shift.shift_date and s.shift_type == shift.shift_type for s in non_overlapping_shifts):
+                    non_overlapping_shifts.append(shift)
+                else:
+                    rejected_overlapping_shifts.append(shift)
+                
+            
+            self.assigned_shifts = set(non_overlapping_shifts[:self.capacity])
+            return set(non_overlapping_shifts[self.capacity:] + rejected_overlapping_shifts) 
 
 class Shift:
     def __init__(self, id, hospital_id, supervisor_id, shift_type, hours_per_shift, day_of_week, number_of_nurses, min_seniority, shift_date):
@@ -187,6 +185,7 @@ def fetch_data_for_week(start_date: datetime, conn):
                 ))
     except Exception as e:
         logging.error(f"Error fetching data for schedule: {e}")
+        return [], []
     return shifts, nurses
 
 def calculate_nurse_shift_score(nurse, shift):
