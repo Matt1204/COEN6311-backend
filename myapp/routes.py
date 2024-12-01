@@ -45,8 +45,8 @@ from .controllers.preference_template_controllers.get_preference_template_contro
 from .controllers.preference_template_controllers.update_preference_template_controller import (
     update_preference_template,
 )
-from .controllers.preference_template_controllers.get_preference_templates_controller import (
-    get_preference_templates,
+from .controllers.preference_template_controllers.get_pref_template_list import (
+    get_pref_template_list,
 )
 from .controllers.request_template_controllers.create_request_template_controller import (
     create_request_template,
@@ -216,10 +216,10 @@ def update_preference_template_route():
     return update_preference_template(data)
 
 
-@my_blueprint.route("/preference-template/get-templates", methods=["GET"])
+@my_blueprint.route("/preference-template/get-template-list", methods=["GET"])
 @verify_access_token
 def get_preference_templates_route():
-    return get_preference_templates()
+    return get_pref_template_list()
 
 
 @my_blueprint.route("/request-template/create-template", methods=["POST"])
