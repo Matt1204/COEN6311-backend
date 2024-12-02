@@ -30,6 +30,7 @@ def create_preference_template(template_data):
             ),
             400,
         )
+    cursor = conn.cursor()
 
     try:
         nurse_id = template_data.get("nurse_id")
@@ -39,9 +40,34 @@ def create_preference_template(template_data):
         max_hours_per_shift = template_data.get("max_hours_per_shift")
         preferred_week_days = json.dumps(template_data.get("preferred_week_days"))
         hospitals_ranking = json.dumps(template_data.get("hospitals_ranking"))
+
+        check_query = """
+            SELECT *
+            FROM preference_template
+            WHERE nurse_id=%s AND template_name=%s
+        """
+        cursor.execute(
+            check_query,
+            [
+                nurse_id,
+                template_name,
+            ],
+        )
+        check_result = cursor.fetchall()
+        # print(check_result)
+        if check_result:
+            return (
+                jsonify(
+                    {
+                        "error": "client-side issue",
+                        "message": "Template name already exists",
+                    }
+                ),
+                400,
+            )
+
         fields = "nurse_id, template_name, time_of_day, hours_per_week, preferred_week_days, max_hours_per_shift, hospitals_ranking"
         values = "%s, %s, %s, %s, %s, %s, %s"
-        cursor = conn.cursor()
         query = f"INSERT INTO preference_template ({fields}) VALUES ({values})"
         params = [
             nurse_id,
@@ -59,7 +85,7 @@ def create_preference_template(template_data):
             jsonify(
                 {
                     "msg": "Added Template Successfully",
-                    "nurse_id": nurse_id,
+                    # "nurse_id": nurse_id,
                     "template_name": template_name,
                 }
             ),
@@ -67,7 +93,7 @@ def create_preference_template(template_data):
         )
 
     except Exception as e:
-        conn.rollback() # Rollback the transaction if an error occurs
+        conn.rollback()  # Rollback the transaction if an error occurs
         return (jsonify({"error": str(e)}), 500)
 
     finally:
