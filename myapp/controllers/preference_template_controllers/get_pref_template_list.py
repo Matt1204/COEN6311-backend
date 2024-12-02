@@ -52,7 +52,7 @@ def get_pref_template_list():
             current_page = int(current_page) - 1
             page_count = math.ceil(template_count / page_size)
             offset = current_page * page_size
-            query += "ORDER BY template_id ASC LIMIT %s OFFSET %s"
+            query += "ORDER BY template_id DESC LIMIT %s OFFSET %s"
             query_values = query_values + [page_size, offset]
             print(page_count)
 
