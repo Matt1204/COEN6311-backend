@@ -39,9 +39,24 @@ def generate_schedule(data):
             ),
             500,
         )
+
     
     start_date = datetime.strptime(start_date, '%Y-%m-%d')
 
+    # make sure this start_date is a Monday
+    if start_date.weekday() != 0:
+        conn.close()
+        return jsonify({"message": "Start date must be a Monday"}), 200
+
+    # make sure the schedule for this start_date doesn't already exist
+    with conn.cursor() as cursor:
+        cursor.execute("""
+            SELECT COUNT(*) FROM master_schedule WHERE shift_date BETWEEN %s AND %s
+        """, (start_date, start_date + timedelta(days=6)))
+        if cursor.fetchone()[0] > 0:
+            conn.close()
+            return jsonify({"message": "Schedule already generated for the week"}), 200
+    
     shifts, nurses = fetch_data_for_week(start_date, conn)
     shift_ranking_of_nurses = create_rankings(nurses, shifts)
     shift_with_assigned_nurses = deferred_acceptance_matching(nurses, shifts)
