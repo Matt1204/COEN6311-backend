@@ -1,3 +1,8 @@
+"""
+    "hours_per_shift" in "shift_request" table 
+    is hardcoded to 8 due to Algorithm Limitation  !!!!!!!!!!!
+"""
+
 from flask import jsonify, request
 from ...config import get_db_connection
 import json
@@ -78,6 +83,11 @@ def update_req(req_payload):
                 params[field] = value
             else:
                 params[field] = json.dumps(value)
+
+            # "hours_per_shift" in "shift_request" table hardcoded to 8 due to Algorithm Limitation  !!!!!!!!!!!
+            if field == "hours_per_shift":
+                params[field] = 8
+
     if not updates:
         # return jsonify({"message": "No valid fields provided to update"}), 400
         return (

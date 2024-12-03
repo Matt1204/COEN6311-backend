@@ -67,6 +67,7 @@ from .controllers.request_template_controllers.delete_request_template_controlle
 my_blueprint = Blueprint("my_blueprint", __name__)
 
 
+# User Authentication
 @my_blueprint.route("/signup", methods=["POST"])
 def signup():
     data = request.json
@@ -79,13 +80,6 @@ def auth():
     return auth_user(data)
 
 
-@my_blueprint.route("/generate-schedule", methods=["POST"])
-@verify_access_token
-def generate_schedule__route():
-    data = request.json
-    return generate_schedule(data)
-
-
 @my_blueprint.route("/refresh", methods=["GET"])
 def refresh():
     return refresh_access_token()
@@ -96,11 +90,13 @@ def logout():
     return logout_user()
 
 
+# hospital info
 @my_blueprint.route("/get-all-hospitals", methods=["GET"])
 def get_all_hospital_route():
     return get_all_hospitals()
 
 
+# user info
 @my_blueprint.route("/get-user", methods=["GET"])
 @verify_access_token
 def get_user_route():
@@ -114,6 +110,7 @@ def update_user_route():
     return update_user(data)
 
 
+# Shift Preference
 @my_blueprint.route("/preference/create-preference", methods=["POST"])
 @verify_access_token
 def create_pref_route():
@@ -140,6 +137,7 @@ def update_pref_route():
     return update_pref(pref_data)
 
 
+# Shift Request
 @my_blueprint.route("/request/get-req-list", methods=["GET"])
 @verify_access_token
 def get_req_list_route():
@@ -166,12 +164,14 @@ def update_req_route():
     return update_req(data)
 
 
+# Nurse Scedule
 @my_blueprint.route("/nurse-schedule/get-shift-list", methods=["GET"])
 @verify_access_token
 def get_nurse_shift_list_route():
     return get_nurse_shift_list()
 
 
+# Hospital Scedule
 @my_blueprint.route("/hospital-schedule/get-shift-list", methods=["GET"])
 @verify_access_token
 def get_hospital_shift_list_route():
@@ -190,6 +190,7 @@ def get_user_list_route():
     return get_user_list()
 
 
+# Preference Template
 @my_blueprint.route("/preference-template/create-template", methods=["POST"])
 @verify_access_token
 def create_preference_template_route():
@@ -222,6 +223,7 @@ def get_preference_templates_route():
     return get_pref_template_list()
 
 
+# Request Template
 @my_blueprint.route("/request-template/create-template", methods=["POST"])
 @verify_access_token
 def create_request_template_route():
@@ -254,7 +256,15 @@ def delete_request_template_route():
     return delete_request_template()
 
 
-@my_blueprint.route("/demo", methods=["GET"])  # New route for demo
+# generate schedule manually(invoke match-making algorithm)
+@my_blueprint.route("/generate-schedule", methods=["POST"])
+@verify_access_token
+def generate_schedule__route():
+    data = request.json
+    return generate_schedule(data)
+
+
+@my_blueprint.route("/demo", methods=["GET"])
 @verify_access_token
 def demo():
     return hello_world()

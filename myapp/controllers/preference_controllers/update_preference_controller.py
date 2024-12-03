@@ -1,3 +1,8 @@
+"""
+    'max_hours_per_shift' and 'hours_per_week' in shift_preference table
+    is hardcoded to 8 and 40 due to Algorithm Limitation
+"""
+
 from flask import jsonify, request
 from ...config import get_db_connection
 import json
@@ -77,6 +82,14 @@ def update_pref(pref_data):
                 params[field] = value
             else:
                 params[field] = json.dumps(value)
+            """
+                'max_hours_per_shift' and 'hours_per_week' in shift_preference table
+                is hardcoded to 8 and 40 due to Algorithm Limitation
+            """
+            if field == "max_hours_per_shift":
+                params[field] = 8
+            if field == "hours_per_week":
+                params[field] = 40
 
     # print(updates)
     print(params)

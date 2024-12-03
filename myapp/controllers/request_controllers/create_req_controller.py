@@ -1,3 +1,8 @@
+"""
+    "hours_per_shift" in "shift_request" table 
+    is hardcoded to 8 due to Algorithm Limitation  !!!!!!!!!!!
+"""
+
 from flask import jsonify, request
 from ...config import get_db_connection
 
@@ -66,7 +71,8 @@ def create_req(req_payload):
             supervisor_id,
             req_payload["shift_date"],
             req_payload["shift_type"],
-            req_payload["hours_per_shift"],
+            # req_payload["hours_per_shift"],
+            8,  # "hours_per_shift" in "shift_request" table is hardcoded to 8 due to Algorithm Limitation
             req_payload["day_of_week"],
             req_payload["nurse_number"],
             req_payload["min_seniority"],
