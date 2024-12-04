@@ -1,6 +1,8 @@
 import mysql.connector
 from mysql.connector import Error
 import bcrypt
+import random
+import json
 
 
 def create_database_connection(host_name, port, user_name, user_password, db_name):
@@ -19,14 +21,62 @@ def create_database_connection(host_name, port, user_name, user_password, db_nam
     return connection
 
 
-def execute_query(connection, query):
+def populate_preference(connection, start_date, end_date):
     cursor = connection.cursor()
-    try:
-        cursor.execute(query)
-        connection.commit()
-        print("Query successful")
-    except Error as err:
-        print(f"Error: '{err}'")
+
+    get_nurse_query = """
+        SELECT u_id 
+        FROM user
+        WHERE role = 'nurse'
+    """
+    cursor.execute(get_nurse_query)
+    nurses_id_list = cursor.fetchall()
+    # print(nurses_id_list)
+
+    time_of_day_options = ["morning", "afternoon", "night"]
+    week_days = [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
+    ]
+
+    delete_query = "DELETE FROM shift_preference WHERE start_date = %s"
+    cursor = connection.cursor()
+    cursor.execute(delete_query, (start_date,))
+    connection.commit()
+
+    for nurse_id in nurses_id_list:
+        # print(nurse_id[0])
+
+        insert_query = """
+            INSERT INTO shift_preference (nurse_id, time_of_day, start_date, end_date, hours_per_week, preferred_week_days, max_hours_per_shift, hospitals_ranking)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        """
+        time_of_day = random.choice(time_of_day_options)
+        preferred_days = json.dumps(random.sample(week_days, k=random.randint(1, 7)))
+        hospitals_ranking = [1, 2, 3]
+        random.shuffle(hospitals_ranking)
+        hospitals_ranking_json = json.dumps(hospitals_ranking)
+        params = [
+            nurse_id[0],
+            time_of_day,
+            start_date,
+            end_date,
+            40,
+            preferred_days,
+            8,
+            hospitals_ranking_json,
+        ]
+        # print(insert_query)
+        # print(params)
+        cursor.execute(insert_query, params)
+
+    connection.commit()
+    cursor.close()
 
 
 def main():
@@ -37,41 +87,12 @@ def main():
     db_password = "123456"
     database = "coen6311"
 
-    # Create a database connection
     connection = create_database_connection(host, port, user, db_password, database)
-
-    # SQL commands to create and populate the 'hospital' table
-    # hospital_inserts = """
-    # INSERT INTO `hospital` (h_name, h_address, h_hotline)
-    # VALUES
-    # ('Hospital One', '1234 Med Street', '123-456-7890'),
-    # ('Hospital Two', '5678 Health Ave', '234-567-8901'),
-    # ('Hospital Three', '9101 Care Blvd', '345-678-9012');
-    # """
-    # # Execute hospital inserts
-    # if connection:
-    #     execute_query(connection, hospital_inserts)
-
-    # Nurses and supervisors data insertion
-    password = "11111111"
-    hashed_password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode(
-        "utf-8"
-    )
-    nurse_inserts = f"""
-    INSERT INTO `user` (first_name, last_name, email, password, role, hospital_id, created_at, updated_at)
-    VALUES 
-        ('supervisor01_firstname', 'supervisor01_lastname', 'supervisor01@mail.com', '{bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")}', 'supervisor', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-        ('supervisor02_firstname', 'supervisor02_lastname', 'supervisor02@mail.com', '{bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")}', 'supervisor', 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-        ('supervisor03_firstname', 'supervisor03_lastname', 'supervisor03@mail.com', '{bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")}', 'supervisor', 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-        ('supervisor04_firstname', 'supervisor04_lastname', 'supervisor04@mail.com', '{bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")}', 'supervisor', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-        ('supervisor05_firstname', 'supervisor05_lastname', 'supervisor05@mail.com', '{bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")}', 'supervisor', 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-        ('supervisor06_firstname', 'supervisor06_lastname', 'supervisor06@mail.com', '{bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")}', 'supervisor', 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
-          """
-    print(nurse_inserts)
 
     # Execute nurse inserts
     if connection:
-        execute_query(connection, nurse_inserts)
+        # execute_query(connection, nurse_inserts)
+        populate_preference(connection, "2024-12-16", "2024-12-22")
 
     # Close the connection
     if connection:
