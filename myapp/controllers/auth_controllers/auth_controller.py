@@ -69,6 +69,7 @@ def auth_user(user_data):
                         # "last_name": foundUser["last_name"],
                     },
                     "exp": datetime.now(timezone.utc) + timedelta(minutes=30),
+                    # "exp": datetime.now(timezone.utc) + timedelta(seconds=15),
                 },
                 ACCESS_TOKEN_SECRET,
                 algorithm="HS256",
@@ -79,6 +80,7 @@ def auth_user(user_data):
                 {
                     "email": foundUser["email"],
                     "exp": datetime.now(timezone.utc) + timedelta(hours=3),
+                    # "exp": datetime.now(timezone.utc) + timedelta(minutes=2),
                 },
                 REFRESH_TOKEN_SECRET,
                 algorithm="HS256",

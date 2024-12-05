@@ -4,12 +4,13 @@ from ...config import get_db_connection
 
 def get_user():
     email = request.args.get("email")
-    if not email:
+    u_id = request.args.get("u_id")
+    if not u_id:
         return (
             jsonify(
                 {
                     "error": "client-side issue",
-                    "message": "email not provided",
+                    "message": "u_id not provided",
                 }
             ),
             400,
@@ -30,7 +31,7 @@ def get_user():
 
     return_string = "first_name, last_name, email, address, phone_number, birthday, seniority, hospital_id"
     try:
-        cursor.execute(f"SELECT {return_string} FROM user WHERE email = %s", (email,))
+        cursor.execute(f"SELECT {return_string} FROM user WHERE u_id = %s", (u_id,))
         foundUser = cursor.fetchone()
         if foundUser is None:
             return (
